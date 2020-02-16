@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>某科学的小姚同志</title>
+  
+  
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://blog.zjuyzj.tech/"/>
+  <updated>2020-02-16T07:38:51.192Z</updated>
+  <id>http://blog.zjuyzj.tech/</id>
+  
+  <author>
+    <name>小姚同志</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>【学习笔记】Linux基础（二）：Linux的基本操作</title>
+    <link href="http://blog.zjuyzj.tech/2020/02/15/%E3%80%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%91Linux%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ALinux%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/"/>
+    <id>http://blog.zjuyzj.tech/2020/02/15/%E3%80%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%91Linux%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ALinux%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/</id>
+    <published>2020-02-15T14:49:29.000Z</published>
+    <updated>2020-02-16T07:38:51.192Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;二、Linux的基本操作&quot;&gt;&lt;a href=&quot;#二、Linux的基本操作&quot; class=&quot;headerlink&quot; title=&quot;二、Linux的基本操作&quot;&gt;&lt;/a&gt;二、Linux的基本操作&lt;/h2&gt;&lt;h3 id=&quot;0、正确的开关机操作&quot;&gt;&lt;a href=&quot;#0、正确的开关机操作&quot; class=&quot;headerlink&quot; title=&quot;0、正确的开关机操作&quot;&gt;&lt;/a&gt;0、正确的开关机操作&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;开机和登陆：&lt;ul&gt;
+&lt;li&gt;安全起见，一般不使用最高权限的root账户登入系统，管理系统时再使用&lt;/li&gt;
+&lt;li&gt;登录时为login程序提供账户名和密码即可，密码不会被显示，登陆后显示&lt;code&gt;[&amp;lt;user_name&amp;gt;@&amp;lt;host_name&amp;gt; &amp;lt;current_dir&amp;gt;]$&lt;/code&gt;，$是普通用户的命令提示符（root用户是#）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;登出和关机/重启&lt;ul&gt;
+&lt;li&gt;使用&lt;code&gt;exit&lt;/code&gt;命令注销当前已登入的用户（不是关机）&lt;/li&gt;
+&lt;li&gt;Linux采用异步的异步的磁盘/内存数据传输模式，同时又是多人多任务操作系统，需要正确关机（服务器只有在维护时关机），且常常加挂UPS&lt;/li&gt;
+&lt;li&gt;关机前：&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;su&lt;/code&gt; 切换到root用户（superuser）&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;who&lt;/code&gt; 查看哪些用户在线&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;netstat -a&lt;/code&gt; 查看网络联机状态&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ps aux&lt;/code&gt; 检查运行的程序&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;sync&lt;/code&gt; 将内存中的数据同步写入硬盘（shutdown/reboot/halt命令也会代为执行）（root用户保存所有用户数据，非root用户保存自己的数据）
+    
+    </summary>
+    
+    
+      <category term="学习笔记" scheme="http://blog.zjuyzj.tech/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    
+      <category term="Linux" scheme="http://blog.zjuyzj.tech/tags/Linux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>【学习笔记】Linux基础（一）：磁盘分区与Linux的安装（以CentOS为例）</title>
+    <link href="http://blog.zjuyzj.tech/2020/02/15/%E3%80%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%91Linux%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E7%A3%81%E7%9B%98%E5%88%86%E5%8C%BA%E4%B8%8ELinux%E7%9A%84%E5%AE%89%E8%A3%85%EF%BC%88%E4%BB%A5CentOS%E4%B8%BA%E4%BE%8B%EF%BC%89/"/>
+    <id>http://blog.zjuyzj.tech/2020/02/15/%E3%80%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%91Linux%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E7%A3%81%E7%9B%98%E5%88%86%E5%8C%BA%E4%B8%8ELinux%E7%9A%84%E5%AE%89%E8%A3%85%EF%BC%88%E4%BB%A5CentOS%E4%B8%BA%E4%BE%8B%EF%BC%89/</id>
+    <published>2020-02-15T14:49:12.000Z</published>
+    <updated>2020-02-16T07:35:18.304Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;一、磁盘分区与Linux的安装（以CentOS为例）&quot;&gt;&lt;a href=&quot;#一、磁盘分区与Linux的安装（以CentOS为例）&quot; class=&quot;headerlink&quot; title=&quot;一、磁盘分区与Linux的安装（以CentOS为例）&quot;&gt;&lt;/a&gt;一、磁盘分区与Linux的安装（以CentOS为例）&lt;/h2&gt;&lt;h3 id=&quot;0、说在安装之前&quot;&gt;&lt;a href=&quot;#0、说在安装之前&quot; class=&quot;headerlink&quot; title=&quot;0、说在安装之前&quot;&gt;&lt;/a&gt;0、说在安装之前&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;在Linux中，“一切设备皆文件”，设备在/dev这个目录下&lt;ul&gt;
+&lt;li&gt;/dev/sd[a-p] 表示SCSI/SATA/USB存储设备（硬盘、U盘等），IDE接口的存储设备有时候也会被仿真为该类型设备&lt;/li&gt;
+&lt;li&gt;/dev/hd[a-d] 表示IDE存储设备&lt;/li&gt;
+&lt;li&gt;/dev/vd[a-p] 表示虚拟机中的VirtI/O存储设备&lt;/li&gt;
+&lt;li&gt;/dev/md[0-127] 表示软件RAID阵列&lt;/li&gt;
+&lt;li&gt;/dev/fd[0-7] 表示软盘驱动器&lt;/li&gt;
+&lt;li&gt;/dev/lp[0-2] 表示LPT并口的打印机，/dev/usb/lp[0-15] 表示USB接口的打印机&lt;/li&gt;
+&lt;li&gt;/dev/input/mouse[0-15] 表示通用鼠标， /dev/psaux 表示PS/2接口的鼠标，/dev/mouse 表示当前正在使用的鼠标&lt;/li&gt;
+&lt;li&gt;/dev/scd[0-1]或/dev/sr[0-1] 表示CD-ROM或DVD-ROM光驱，/dev/cdrom 表示当前CD-ROM&lt;/li&gt;
+&lt;li&gt;/dev/ht0 表示IDE接口的磁带机，/dev/st0 表示SATA/SCSI串口磁带机，/dev/tape 表示当前磁带机
+    
+    </summary>
+    
+    
+      <category term="学习笔记" scheme="http://blog.zjuyzj.tech/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    
+      <category term="Linux" scheme="http://blog.zjuyzj.tech/tags/Linux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>【学习笔记】Linux基础（零）：预备知识</title>
+    <link href="http://blog.zjuyzj.tech/2020/02/15/%E3%80%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%91Linux%E5%9F%BA%E7%A1%80%EF%BC%88%E9%9B%B6%EF%BC%89%EF%BC%9A%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86/"/>
+    <id>http://blog.zjuyzj.tech/2020/02/15/%E3%80%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%91Linux%E5%9F%BA%E7%A1%80%EF%BC%88%E9%9B%B6%EF%BC%89%EF%BC%9A%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86/</id>
+    <published>2020-02-15T12:04:10.000Z</published>
+    <updated>2020-02-16T07:38:03.263Z</updated>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;Linux基础学习笔记&quot;&gt;&lt;a href=&quot;#Linux基础学习笔记&quot; class=&quot;headerlink&quot; title=&quot;Linux基础学习笔记&quot;&gt;&lt;/a&gt;Linux基础学习笔记&lt;/h1&gt;&lt;p&gt;Note：本学习笔记源自《鸟哥的Linux私房菜（基础学习篇）》一书，为此书重要内容的摘要和总结，对于一些常识性的知识不再归纳&lt;/p&gt;
+&lt;h2 id=&quot;零、Linux预备知识&quot;&gt;&lt;a href=&quot;#零、Linux预备知识&quot; class=&quot;headerlink&quot; title=&quot;零、Linux预备知识&quot;&gt;&lt;/a&gt;零、Linux预备知识&lt;/h2&gt;&lt;h3 id=&quot;0、硬件小知识&quot;&gt;&lt;a href=&quot;#0、硬件小知识&quot; class=&quot;headerlink&quot; title=&quot;0、硬件小知识&quot;&gt;&lt;/a&gt;0、硬件小知识&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;精简指令集RSIC处理器的指令少，单个指令运行快但复杂任务所需要的指令多：Oracle公司的SPARC架构，IBM公司的PowerPC架构，ARM架构等；复杂指令集CSIC：Intel公司x86架构及其兼容型&lt;/li&gt;
+&lt;li&gt;为了与32位的x86架构区分开来，x86_64专指64位x86架构；同属于x86架构，i386指80386机，i686指Pentium II/Intel Celeron或AMD Athlon(K7)机&lt;/li&gt;
+&lt;li&gt;比TB(Tera Bytes)更大的容量单位好友EB(Exa Bytes)和ZB(Zetta Bytes)&lt;/li&gt;
+&lt;li&gt;存储上（Bytes），相邻单位为1024倍的关系，而速度（Hz）上，通常为1000倍的关系；值得注意的是，硬盘制造商通常会采用1000倍关系，这与扇区(sector)数有关（传统的1个扇区=512Bytes，现在有了4K大小的扇区）&lt;/li&gt;
+&lt;li&gt;北桥连接CPU和内存、显卡，总线速度较快；南桥连接硬盘控制器、外设等速度较慢的设备；新的Intel架构主板往往将内存控制器集成在CPU中，采用单个桥芯片（南桥），以提高速度，CPU与内存、显卡、南桥之间通过QPI与DMI(Intel)或Hyper Transport(AMD)技术通信&lt;/li&gt;
+&lt;li&gt;前端总线FSB是内存控制器与内存之间的总线&lt;/li&gt;
+&lt;li&gt;L2 Cache一般为容量小、单位容量晶体管数目多、速度比DRAM快的SRAM存储器，设计在CPU内部，运行在与CPU一样的频率上，存放一些经常被使用的数据，减少低速的内存访问
+    
+    </summary>
+    
+    
+      <category term="学习笔记" scheme="http://blog.zjuyzj.tech/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+    
+      <category term="Linux" scheme="http://blog.zjuyzj.tech/tags/Linux/"/>
+    
+  </entry>
+  
+</feed>

@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="description" content="分享技术，分享生活，请多多指教！" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    【学习笔记】Linux基础（零）：预备知识 |  某科学的小姚同志
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+
+  
+
+  
+
+<link rel="alternate" href="/atom.xml" title="某科学的小姚同志" type="application/atom+xml">
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <section class="outer">
+  <article id="post-【学习笔记】Linux基础（零）：预备知识" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  【学习笔记】Linux基础（零）：预备知识
+</h1>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/02/15/%E3%80%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%91Linux%E5%9F%BA%E7%A1%80%EF%BC%88%E9%9B%B6%EF%BC%89%EF%BC%9A%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86/" class="article-date">
+  <time datetime="2020-02-15T12:04:10.000Z" itemprop="datePublished">2020-02-15</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a>
+  </div>
+
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">1.9k字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">6分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h1 id="Linux基础学习笔记"><a href="#Linux基础学习笔记" class="headerlink" title="Linux基础学习笔记"></a>Linux基础学习笔记</h1><p>Note：本学习笔记源自《鸟哥的Linux私房菜（基础学习篇）》一书，为此书重要内容的摘要和总结，对于一些常识性的知识不再归纳</p>
+<h2 id="零、Linux预备知识"><a href="#零、Linux预备知识" class="headerlink" title="零、Linux预备知识"></a>零、Linux预备知识</h2><h3 id="0、硬件小知识"><a href="#0、硬件小知识" class="headerlink" title="0、硬件小知识"></a>0、硬件小知识</h3><ul>
+<li>精简指令集RSIC处理器的指令少，单个指令运行快但复杂任务所需要的指令多：Oracle公司的SPARC架构，IBM公司的PowerPC架构，ARM架构等；复杂指令集CSIC：Intel公司x86架构及其兼容型</li>
+<li>为了与32位的x86架构区分开来，x86_64专指64位x86架构；同属于x86架构，i386指80386机，i686指Pentium II/Intel Celeron或AMD Athlon(K7)机</li>
+<li>比TB(Tera Bytes)更大的容量单位好友EB(Exa Bytes)和ZB(Zetta Bytes)</li>
+<li>存储上（Bytes），相邻单位为1024倍的关系，而速度（Hz）上，通常为1000倍的关系；值得注意的是，硬盘制造商通常会采用1000倍关系，这与扇区(sector)数有关（传统的1个扇区=512Bytes，现在有了4K大小的扇区）</li>
+<li>北桥连接CPU和内存、显卡，总线速度较快；南桥连接硬盘控制器、外设等速度较慢的设备；新的Intel架构主板往往将内存控制器集成在CPU中，采用单个桥芯片（南桥），以提高速度，CPU与内存、显卡、南桥之间通过QPI与DMI(Intel)或Hyper Transport(AMD)技术通信</li>
+<li>前端总线FSB是内存控制器与内存之间的总线</li>
+<li>L2 Cache一般为容量小、单位容量晶体管数目多、速度比DRAM快的SRAM存储器，设计在CPU内部，运行在与CPU一样的频率上，存放一些经常被使用的数据，减少低速的内存访问<a id="more"></a></li>
+<li>SATA每10Bits数据都有2Bits用作校验，带宽计算需要注意</li>
+<li>SAS即串行SCSI(Serial Attached SCSI)，比SATA快但成本高</li>
+<li>IOPS:Input/Output Operations Per Second</li>
+<li>PCIe(PCI Express)总线的xn是可以累计计算的，比如一个x16控制器可以带动两个x8的设备或一个x8和两个x4的设备全速工作；PCIe通道有的是直连CPU的，速度快，有的是通过南桥的PCIe 2.0/3.0控制器间接控制，速度较慢（有时候DMI总线宽度会成为PCIe的瓶颈）；有些x16插槽只有x8或更少的部分有金手指，需要查阅主板说明书</li>
+<li>GT/s即千兆传输每秒(Giga Transmission per second)，是物理层通信速度，需要按照通信协议和总线宽度的不同转换为文件传输速率GByte/s</li>
+<li>使用<code>cat /proc/cpuinfo</code>和<code>lspci</code>命令可以查看硬件信息</li>
+</ul>
+<h3 id="1、Linux的历史"><a href="#1、Linux的历史" class="headerlink" title="1、Linux的历史"></a>1、Linux的历史</h3><ul>
+<li><p>MIT的兼容分时系统CTSS（Compatible Time-Sharing System）利用终端机访问和共享大型机资源，终端机仅有I/O功能</p>
+</li>
+<li><p>MIT&amp;GE发起Multics计划，强化多用户分时系统，Bell实验室退出Multics计划</p>
+</li>
+<li><p>Bell实验室Ken Tompson用汇编语言写出Unix核心原型（两个重要思想：程序和系统装置都是文件；程序只有一个目的，且要有效地完成目标）</p>
+</li>
+<li><p>1973年Unix诞生，随后被以高级语言重构（Dennis Ritchie），伴随C语言的诞生，高级语言带来强大的可移植性</p>
+</li>
+<li><p>1977年加州大学伯克利分校，类Unix系统BSD诞生</p>
+</li>
+<li><p>1979年，AT&amp;T发布System V，一个x86上的Unix发行版，Unix向小型机和个人计算机迁移</p>
+<p>Note：发行版-将操作系统和工具软件（如图形界面）、安装程序、文档等打包发布</p>
+</li>
+<li><p>1979年，AT&amp;T决定不再公开Unix原始码</p>
+</li>
+<li><p>为了在拿不到原始码的情况下进行Unix内核教学，1984年x86架构下Minix系统开始编写，非免费</p>
+</li>
+<li><p>1984年，Stallman发起GNU（GNU‘s Not Unix）计划，参考Unix上的软件自己写了一些自由的小软件，并筹划编写GNU C Compiler(gcc)，向Unix移植了自己写的Emacs编辑器，成立自由软件基金会FSF，编写GNU C Library(glibc)和Bash Shell，起草通用公共许可证GPL防止自由软件被利用</p>
+</li>
+<li><p>1988年MIT主导发表了X Window System，成立XFree86组织，编写图形GUI</p>
+</li>
+<li><p>1991年Linus Torvalds开发出Linux v0.02核心原型，开放源代码，Linux诞生并在开发者社区文化下迅速发展</p>
+</li>
+</ul>
+<h3 id="2、有关Linux的小知识"><a href="#2、有关Linux的小知识" class="headerlink" title="2、有关Linux的小知识"></a>2、有关Linux的小知识</h3><ul>
+<li>Linux是操作系统，包括核心（含有少量核心工具）和系统调用两层，是硬件和应用程序之间的接口</li>
+<li>最初Linux基于Intel 80386架构编写，在FTP上共享源代码（GNU GPL协议），BBS上进行开发交流，很快被移植到其他平台架构</li>
+<li>Linux的开发参考了IEEE为Unix设计的标准的POSIX（Portable Operating System Interface）规范，是一种类Unix（Unix Like）操作系统</li>
+<li>Linux内核采用模块化开发，新功能引入快</li>
+<li>Linux的内核版本号：主版本.次版本.释出版本-修改版本，通过<code>uname -r</code>命令查询；注意区分发行版版本和内核版本<ul>
+<li>2.6.x版本以前，主、次版本为奇数是发展中版本，偶数为稳定版本；新功能累积产生新的释出版本；针对某个版本的核心修改程序产生修改版本</li>
+<li>3.0版本后主要依据主线版本（MainLine）开发核心，如3.9主线版本继续开发产生3.10主线版本</li>
+<li>有些核心版本在结束开发后不再有人维护（End of Live，EOL），有些则是长期维护版本（LTS）</li>
+</ul>
+</li>
+<li>不同Linux发行版使用同样的Linux内核，应用软件大同小异，基本上都遵守Linux Standard Base（LSB）和File system Hierarchy Standard（FHS）规范以约束开发者；商业公司开发的发行版通常比社群版更加保守稳定<ul>
+<li>采用RPM软件管理的发行版：RHEL和SuSE（商业）；Fedora、CentOS和OpenSuSE（社群）等</li>
+<li>采用DPKG软件管理的发行版：Ubuntu（商业）；Debian（社群）等</li>
+<li>其他发行版：Arch、Gentoo等</li>
+</ul>
+</li>
+<li>自由(Freedom)!=免费(Free)，“自由”包括：取得软件与源码、复制、修改、再发行和回馈社群的权利与义务，不可以修改自由软件的许可证，也不能将其单纯贩卖（贩卖服务、手册等附加价值是可以的）</li>
+<li>自由软件是许可证更加严格的开源软件，非自由的开源软件再发布的授权可以与原软件不同，其全部或部分可作为其他软件的一部分，对商业行为相对更加友好，比如Apache授权、MIT授权和BSD授权</li>
+</ul>
+<h3 id="3、关于Linux学习方法"><a href="#3、关于Linux学习方法" class="headerlink" title="3、关于Linux学习方法"></a>3、关于Linux学习方法</h3><ul>
+<li><p>兴趣+成就感</p>
+</li>
+<li><p>习惯命令行，抛弃X Window(X11)环境</p>
+</li>
+<li><p>从头学习Linux基础，不要急于搞网络应用</p>
+</li>
+<li><p>找一本好的工具书，用作命令参考</p>
+</li>
+<li><p>多多上机练习，简易在实体机上装个Linux发行版（Distribution）</p>
+</li>
+<li><p>遇到问题先自己摸索尝试解决</p>
+<ul>
+<li>在主机或网络数据库上查询How-To/FAQ</li>
+<li>注意屏幕信息输出，勤于查看/var/log里的日志</li>
+</ul>
+</li>
+<li><p>善于提问，《提问的智慧》</p>
+</li>
+<li><p>参与讨论、协助回答问题</p>
+</li>
+<li><p>尝试Debug，不要利用重启/重装系统解决问题</p>
+</li>
+<li><p>养成做记录和整理的习惯，初学时多多借鉴他人的资料</p>
+</li>
+<li><p>尝试多种解决问题的办法，举一反三，培养长远、整体的眼光</p>
+</li>
+<li><p>不要有知识偏见</p>
+</li>
+<li><p>生产环境下的操作一定要谨慎，打字过快容易出现错误</p>
+</li>
+</ul>
+
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+          
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://blog.zjuyzj.tech/2020/02/15/%E3%80%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%91Linux%E5%9F%BA%E7%A1%80%EF%BC%88%E9%9B%B6%EF%BC%89%EF%BC%9A%E9%A2%84%E5%A4%87%E7%9F%A5%E8%AF%86/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/" rel="tag">Linux</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+      <a href="/2020/02/15/%E3%80%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%91Linux%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E7%A3%81%E7%9B%98%E5%88%86%E5%8C%BA%E4%B8%8ELinux%E7%9A%84%E5%AE%89%E8%A3%85%EF%BC%88%E4%BB%A5CentOS%E4%B8%BA%E4%BE%8B%EF%BC%89/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            【学习笔记】Linux基础（一）：磁盘分区与Linux的安装（以CentOS为例）
+          
+        </div>
+      </a>
+    
+    
+  </nav>
+
+
+  
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2020
+        小姚同志
+      </li>
+      <li>
+        
+          Powered by
+        
+        
+        <a href="https://hexo.io" target="_blank">Hexo</a> Theme <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+      </li>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+      <aside class="sidebar">
+        <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/face.png" alt="某科学的小姚同志"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">动态</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">文章</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+      
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<script src="/js/share.js"></script>
+
+
+
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+    strings: ['生活充满意外，美好就在身边','技术是码农的第一生产力','做一个不甘平凡的工具人'],
+    startDelay: 0,
+    typeSpeed: 200,
+    loop: true,
+    backSpeed: 100,
+    showCursor: true
+    });
+  } catch (err) {
+  }
+  
+</script>
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer:'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto',
+    onClick: (e) => {
+      $('.toc-link').removeClass('is-active-link');
+      $(`a[href=${e.target.hash}]`).addClass('is-active-link');
+      $(e.target.hash).scrollIntoView();
+      return false;
+    }
+  });
+</script>
+
+
+<script>
+  var ayerConfig = {
+    mathjax: false
+  }
+</script>
+
+
+<script src="/js/ayer.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+  </div>
+</body>
+
+</html>
