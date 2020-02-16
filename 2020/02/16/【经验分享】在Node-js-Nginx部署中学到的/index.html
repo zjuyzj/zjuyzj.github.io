@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="description" content="分享技术，分享生活，请多多指教！" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    【经验分享】在Node.js&amp;Nginx部署中学到的 |  某科学的小姚同志
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<script src="/js/pace.min.js"></script>
+
+
+  
+
+  
+
+<link rel="alternate" href="/atom.xml" title="某科学的小姚同志" type="application/atom+xml">
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content">
+      <section class="outer">
+  <article id="post-【经验分享】在Node-js-Nginx部署中学到的" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  【经验分享】在Node.js&amp;Nginx部署中学到的
+</h1>
+  
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/02/16/%E3%80%90%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB%E3%80%91%E5%9C%A8Node-js-Nginx%E9%83%A8%E7%BD%B2%E4%B8%AD%E5%AD%A6%E5%88%B0%E7%9A%84/" class="article-date">
+  <time datetime="2020-02-16T12:39:57.000Z" itemprop="datePublished">2020-02-16</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/">经验分享</a>
+  </div>
+
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">1.2k字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">4分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+
+
+      
+
+      
+      <h1 id="【经验分享】在Node-js-amp-Nginx部署中学到的"><a href="#【经验分享】在Node-js-amp-Nginx部署中学到的" class="headerlink" title="【经验分享】在Node.js&amp;Nginx部署中学到的"></a>【经验分享】在Node.js&amp;Nginx部署中学到的</h1><h2 id="1、源码安装和二进制安装方式的选择"><a href="#1、源码安装和二进制安装方式的选择" class="headerlink" title="1、源码安装和二进制安装方式的选择"></a>1、源码安装和二进制安装方式的选择</h2><p>服务器安装程序会首选源码安装方式.</p>
+<p>优点显而易见，那就是编译出的软件更适合当前运行环境，且软件定制性强；在这种方式下，需要：</p>
+<ul>
+<li>正确安装gcc,make(和cmake),tar,gzip/bzip2及编译工具链的相关依赖</li>
+<li>使用wget获取源码包</li>
+<li>使用tar联合gzip/bzip2解压缩、解归档</li>
+<li>如果需要，利用cmake工具和CMakeLists.txt来生成makefile</li>
+<li>在源码目录下使用<code>./configure</code>配置编译和安装参数</li>
+<li>使用<code>make</code>命令对源码进行编译（<code>-prefix</code>参数指定后续安装路径）</li>
+<li>使用<code>make install</code>命令对编译好的二进制文件进行安装</li>
+</ul>
+<a id="more"></a>
+
+<p>但编译需要时间成本，且不适合在运行有关键服务的环境中进行</p>
+<p>我尝试在一台分配有单核e3 1240 v2处理器，768M内存的VPS上编译Node.js环境（含有npm），整个过程居然长达2小时！</p>
+<p>有时安装编译好的二进制包是更好的选择</p>
+<p>Note：像Nginx这种高度定制的软件如果需要的模块不多，还是建议编译安装，编译速度很快的</p>
+<h2 id="2、有时不能使用相对路径"><a href="#2、有时不能使用相对路径" class="headerlink" title="2、有时不能使用相对路径"></a>2、有时不能使用相对路径</h2><p>通常使用将程序路径加入~/.bashrc配置环境变量，来实现把某程序设置为“命令”的目的</p>
+<p>另一种方法是建立用户命令在/usr/bin中的软链接（Symbol Link）（<code>ln -s</code>）（每次在Bash中输入命令时，Bash就会在/usr/bin中自动查找），但不成功：</p>
+<p>这是因为链接的时候使用的是相对路径，导致软链接文件中存储的也是相对路径，Bash无法正确识别了.</p>
+<p>所以牢记使用<code>ln</code>进行链接的时候一定要使用绝对路径哦！</p>
+<h2 id="3、善用SCP传输文件"><a href="#3、善用SCP传输文件" class="headerlink" title="3、善用SCP传输文件"></a>3、善用SCP传输文件</h2><p>大家都习惯使用wget从别人的网站上获取软件包等资源，但如果需要在本机和远程主机间建立文件传输，SCP将是一个简易而快捷的选择：</p>
+<p><code>scp [-P &lt;port&gt;] &lt;source&gt; &lt;destination&gt;</code></p>
+<p>其中，远程路径用username@host:path表示</p>
+<p>SCP和SSH使用同样的协议，支持公私钥认证</p>
+<h2 id="4、当心权限设置中的陷阱"><a href="#4、当心权限设置中的陷阱" class="headerlink" title="4、当心权限设置中的陷阱"></a>4、当心权限设置中的陷阱</h2><p>Nginx设置好服务和配置文件后运行，访问主机出现“403 Forbidden”，百思不得其解，后来发现是权限设置问题：</p>
+<ul>
+<li><p>首先为了安全，创建了登陆Shell为/sbin/nologin（即不能登入Bash）的nginx用户和同名的组，nginx.conf的user字段设置为nginx nginx</p>
+</li>
+<li><p>静态页面放在/root目录下，/root目录对其他组（nginx组）没开放r或x权限都会导致无法正常读取到页面而出错（r是获取目录结构的权限，x是进入目录的权限）</p>
+</li>
+<li><p>使用root用户直接或间接生成的文件的属主和属组都是root，这样产生的静态页面往往是nginx组的nginx用户无法访问的（还取决于文件的默认权限即umask）</p>
+</li>
+</ul>
+<h2 id="4、Node-js后台运行的办法"><a href="#4、Node-js后台运行的办法" class="headerlink" title="4、Node.js后台运行的办法"></a>4、Node.js后台运行的办法</h2><p>想让Node.js服务端在后台运行，试验发现“使用<code>&amp;</code>将进程放入后台”及“<code>&amp;nohup</code>避免登出账户向进程发送挂断信号”这两个常用手段均失效</p>
+<p>一个可行的办法是利用Node.js的pm2：</p>
+<ul>
+<li><p><code>npm install pm2 -g</code> 安装pm2包到全局</p>
+</li>
+<li><p><node_installation_path>/lib/node_modules/pm2/bin/pm2 是pm2所在处，将它配置到环境变量或建立其到/usr/bin的软链接</p>
+</li>
+<li><p>在目录Node.js脚本程序的目录下建立以下start.js文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">const &#123; exec &#125; &#x3D; require(&#39;child_process&#39;)</span><br><span class="line">exec(&#39;&lt;node_start_command&gt;&#39;,(error, stdout, stderr) &#x3D;&gt; &#123;</span><br><span class="line">  if(error)&#123;</span><br><span class="line">    console.log(&#96;exec error: $&#123;error&#125;&#96;)</span><br><span class="line">    return</span><br><span class="line">  &#125;</span><br><span class="line">  console.log(&#96;stdout: $&#123;stdout&#125;&#96;);</span><br><span class="line">  console.log(&#96;stderr: $&#123;stderr&#125;&#96;);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在此目录中<code>pm2 start start.js [--name &lt;proc_name&gt;]</code>启动Node.js程序，之后就可以放心登出了</p>
+</li>
+<li><p><code>pm2 stop &lt;proc_name&gt;</code>停止某个Process的运行</p>
+</li>
+</ul>
+<h2 id="5、杀死连接异常的登入"><a href="#5、杀死连接异常的登入" class="headerlink" title="5、杀死连接异常的登入"></a>5、杀死连接异常的登入</h2><p>在通过SSH连接远端服务器进行维护操作的时候，难免会因为网络原因连接中断，这时远程的登入依然存在，登入用户运行的程序并不会应为连接的断开而终结</p>
+<p>这时如果不手动杀死异常的连接，会造成一定程度的资源浪费</p>
+<p>杀死不正常的连接：</p>
+<ul>
+<li><code>w</code>命令查看当前登入的终端号</li>
+<li><code>pstree</code>查看进程的父子关系，确认不正常连接产生的Bash进程执行的子进程</li>
+<li><code>pkill -kill -t &lt;console_id&gt;</code>杀死该终端</li>
+</ul>
+<p>杀死僵死的进程：</p>
+<ul>
+<li><code>ps aux</code>或<code>pstree</code>查看进程的运行状态</li>
+<li><code>killall -kill &lt;pname&gt;</code>按进程名杀死进程</li>
+<li><code>kill -kill &lt;pid&gt;</code>按进程号杀死进程</li>
+</ul>
+
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+          
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://blog.zjuyzj.tech/2020/02/16/%E3%80%90%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB%E3%80%91%E5%9C%A8Node-js-Nginx%E9%83%A8%E7%BD%B2%E4%B8%AD%E5%AD%A6%E5%88%B0%E7%9A%84/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux-Nginx/" rel="tag">Linux Nginx</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+    
+      <a href="/2020/02/15/%E3%80%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%91Linux%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ALinux%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">【学习笔记】Linux基础（二）：Linux的基本操作</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2020
+        小姚同志
+      </li>
+      <li>
+        
+          Powered by
+        
+        
+        <a href="https://hexo.io" target="_blank">Hexo</a> Theme <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+        
+        <span>
+  <i>PV:<span id="busuanzi_value_page_pv"></span></i>
+  <i>UV:<span id="busuanzi_value_site_uv"></span></i>
+</span>
+        
+      </li>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+    <div class="to_top">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+      </div>
+    </main>
+      <aside class="sidebar">
+        <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/face.png" alt="某科学的小姚同志"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">动态</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">文章</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      </aside>
+      <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+      
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<script src="/js/share.js"></script>
+
+
+
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+    strings: ['生活充满意外，美好就在身边','技术是码农的第一生产力','做一个不甘平凡的工具人'],
+    startDelay: 0,
+    typeSpeed: 200,
+    loop: true,
+    backSpeed: 100,
+    showCursor: true
+    });
+  } catch (err) {
+  }
+  
+</script>
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer:'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto',
+    onClick: (e) => {
+      $('.toc-link').removeClass('is-active-link');
+      $(`a[href=${e.target.hash}]`).addClass('is-active-link');
+      $(e.target.hash).scrollIntoView();
+      return false;
+    }
+  });
+</script>
+
+
+<script>
+  var ayerConfig = {
+    mathjax: false
+  }
+</script>
+
+
+<script src="/js/ayer.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+  </div>
+</body>
+
+</html>

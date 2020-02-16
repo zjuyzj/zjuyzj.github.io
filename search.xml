@@ -1,6 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>【经验分享】在Node.js&amp;Nginx部署中学到的</title>
+    <url>/2020/02/16/%E3%80%90%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB%E3%80%91%E5%9C%A8Node-js-Nginx%E9%83%A8%E7%BD%B2%E4%B8%AD%E5%AD%A6%E5%88%B0%E7%9A%84/</url>
+    <content><![CDATA[<h1 id="【经验分享】在Node-js-amp-Nginx部署中学到的"><a href="#【经验分享】在Node-js-amp-Nginx部署中学到的" class="headerlink" title="【经验分享】在Node.js&amp;Nginx部署中学到的"></a>【经验分享】在Node.js&amp;Nginx部署中学到的</h1><h2 id="1、源码安装和二进制安装方式的选择"><a href="#1、源码安装和二进制安装方式的选择" class="headerlink" title="1、源码安装和二进制安装方式的选择"></a>1、源码安装和二进制安装方式的选择</h2><p>服务器安装程序会首选源码安装方式.</p>
+<p>优点显而易见，那就是编译出的软件更适合当前运行环境，且软件定制性强；在这种方式下，需要：</p>
+<ul>
+<li>正确安装gcc,make(和cmake),tar,gzip/bzip2及编译工具链的相关依赖</li>
+<li>使用wget获取源码包</li>
+<li>使用tar联合gzip/bzip2解压缩、解归档</li>
+<li>如果需要，利用cmake工具和CMakeLists.txt来生成makefile</li>
+<li>在源码目录下使用<code>./configure</code>配置编译和安装参数</li>
+<li>使用<code>make</code>命令对源码进行编译（<code>-prefix</code>参数指定后续安装路径）</li>
+<li>使用<code>make install</code>命令对编译好的二进制文件进行安装</li>
+</ul>
+<a id="more"></a>
+
+<p>但编译需要时间成本，且不适合在运行有关键服务的环境中进行</p>
+<p>我尝试在一台分配有单核e3 1240 v2处理器，768M内存的VPS上编译Node.js环境（含有npm），整个过程居然长达2小时！</p>
+<p>有时安装编译好的二进制包是更好的选择</p>
+<p>Note：像Nginx这种高度定制的软件如果需要的模块不多，还是建议编译安装，编译速度很快的</p>
+<h2 id="2、有时不能使用相对路径"><a href="#2、有时不能使用相对路径" class="headerlink" title="2、有时不能使用相对路径"></a>2、有时不能使用相对路径</h2><p>通常使用将程序路径加入~/.bashrc配置环境变量，来实现把某程序设置为“命令”的目的</p>
+<p>另一种方法是建立用户命令在/usr/bin中的软链接（Symbol Link）（<code>ln -s</code>）（每次在Bash中输入命令时，Bash就会在/usr/bin中自动查找），但不成功：</p>
+<p>这是因为链接的时候使用的是相对路径，导致软链接文件中存储的也是相对路径，Bash无法正确识别了.</p>
+<p>所以牢记使用<code>ln</code>进行链接的时候一定要使用绝对路径哦！</p>
+<h2 id="3、善用SCP传输文件"><a href="#3、善用SCP传输文件" class="headerlink" title="3、善用SCP传输文件"></a>3、善用SCP传输文件</h2><p>大家都习惯使用wget从别人的网站上获取软件包等资源，但如果需要在本机和远程主机间建立文件传输，SCP将是一个简易而快捷的选择：</p>
+<p><code>scp [-P &lt;port&gt;] &lt;source&gt; &lt;destination&gt;</code></p>
+<p>其中，远程路径用username@host:path表示</p>
+<p>SCP和SSH使用同样的协议，支持公私钥认证</p>
+<h2 id="4、当心权限设置中的陷阱"><a href="#4、当心权限设置中的陷阱" class="headerlink" title="4、当心权限设置中的陷阱"></a>4、当心权限设置中的陷阱</h2><p>Nginx设置好服务和配置文件后运行，访问主机出现“403 Forbidden”，百思不得其解，后来发现是权限设置问题：</p>
+<ul>
+<li><p>首先为了安全，创建了登陆Shell为/sbin/nologin（即不能登入Bash）的nginx用户和同名的组，nginx.conf的user字段设置为nginx nginx</p>
+</li>
+<li><p>静态页面放在/root目录下，/root目录对其他组（nginx组）没开放r或x权限都会导致无法正常读取到页面而出错（r是获取目录结构的权限，x是进入目录的权限）</p>
+</li>
+<li><p>使用root用户直接或间接生成的文件的属主和属组都是root，这样产生的静态页面往往是nginx组的nginx用户无法访问的（还取决于文件的默认权限即umask）</p>
+</li>
+</ul>
+<h2 id="4、Node-js后台运行的办法"><a href="#4、Node-js后台运行的办法" class="headerlink" title="4、Node.js后台运行的办法"></a>4、Node.js后台运行的办法</h2><p>想让Node.js服务端在后台运行，试验发现“使用<code>&amp;</code>将进程放入后台”及“<code>&amp;nohup</code>避免登出账户向进程发送挂断信号”这两个常用手段均失效</p>
+<p>一个可行的办法是利用Node.js的pm2：</p>
+<ul>
+<li><p><code>npm install pm2 -g</code> 安装pm2包到全局</p>
+</li>
+<li><p><node_installation_path>/lib/node_modules/pm2/bin/pm2 是pm2所在处，将它配置到环境变量或建立其到/usr/bin的软链接</p>
+</li>
+<li><p>在目录Node.js脚本程序的目录下建立以下start.js文件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const &#123; exec &#125; &#x3D; require(&#39;child_process&#39;)</span><br><span class="line">exec(&#39;&lt;node_start_command&gt;&#39;,(error, stdout, stderr) &#x3D;&gt; &#123;</span><br><span class="line">  if(error)&#123;</span><br><span class="line">    console.log(&#96;exec error: $&#123;error&#125;&#96;)</span><br><span class="line">    return</span><br><span class="line">  &#125;</span><br><span class="line">  console.log(&#96;stdout: $&#123;stdout&#125;&#96;);</span><br><span class="line">  console.log(&#96;stderr: $&#123;stderr&#125;&#96;);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在此目录中<code>pm2 start start.js [--name &lt;proc_name&gt;]</code>启动Node.js程序，之后就可以放心登出了</p>
+</li>
+<li><p><code>pm2 stop &lt;proc_name&gt;</code>停止某个Process的运行</p>
+</li>
+</ul>
+<h2 id="5、杀死连接异常的登入"><a href="#5、杀死连接异常的登入" class="headerlink" title="5、杀死连接异常的登入"></a>5、杀死连接异常的登入</h2><p>在通过SSH连接远端服务器进行维护操作的时候，难免会因为网络原因连接中断，这时远程的登入依然存在，登入用户运行的程序并不会应为连接的断开而终结</p>
+<p>这时如果不手动杀死异常的连接，会造成一定程度的资源浪费</p>
+<p>杀死不正常的连接：</p>
+<ul>
+<li><code>w</code>命令查看当前登入的终端号</li>
+<li><code>pstree</code>查看进程的父子关系，确认不正常连接产生的Bash进程执行的子进程</li>
+<li><code>pkill -kill -t &lt;console_id&gt;</code>杀死该终端</li>
+</ul>
+<p>杀死僵死的进程：</p>
+<ul>
+<li><code>ps aux</code>或<code>pstree</code>查看进程的运行状态</li>
+<li><code>killall -kill &lt;pname&gt;</code>按进程名杀死进程</li>
+<li><code>kill -kill &lt;pid&gt;</code>按进程号杀死进程</li>
+</ul>
+]]></content>
+      <categories>
+        <category>经验分享</category>
+      </categories>
+      <tags>
+        <tag>Linux Nginx</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>【学习笔记】Linux基础（二）：Linux的基本操作</title>
     <url>/2020/02/15/%E3%80%90%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E3%80%91Linux%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ALinux%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/</url>
     <content><![CDATA[<h2 id="二、Linux的基本操作"><a href="#二、Linux的基本操作" class="headerlink" title="二、Linux的基本操作"></a>二、Linux的基本操作</h2><h3 id="0、正确的开关机操作"><a href="#0、正确的开关机操作" class="headerlink" title="0、正确的开关机操作"></a>0、正确的开关机操作</h3><ul>
